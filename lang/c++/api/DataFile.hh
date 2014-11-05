@@ -104,6 +104,13 @@ public:
     DataFileWriterBase(const char* filename, const ValidSchema& schema,
         size_t syncInterval, Codec codec = NULL_CODEC);
 
+    /**
+     * Constructs a data file writer with the given sync interval and name.
+     */
+    DataFileWriterBase(std::auto_ptr<OutputStream> stream,
+        const ValidSchema& schema,
+        size_t syncInterval, Codec codec = NULL_CODEC);
+
     ~DataFileWriterBase();
     /**
      * Closes the current file. Once closed this datafile object cannot be
@@ -135,6 +142,13 @@ public:
     DataFileWriter(const char* filename, const ValidSchema& schema,
         size_t syncInterval = 16 * 1024, Codec codec = NULL_CODEC) :
         base_(new DataFileWriterBase(filename, schema, syncInterval, codec)) { }
+
+    /**
+     * Constructs a new data file.
+     */
+    DataFileWriter(std::auto_ptr<OutputStream> stream, const ValidSchema& schema,
+        size_t syncInterval = 16 * 1024, Codec codec = NULL_CODEC) :
+        base_(new DataFileWriterBase(stream, schema, syncInterval, codec)) { }
 
     /**
      * Writes the given piece of data into the file.
