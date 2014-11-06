@@ -34,6 +34,7 @@
 #include "boost/utility.hpp"
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace avro {
 
@@ -60,7 +61,7 @@ class AVRO_DECL DataFileWriterBase : boost::noncopyable {
     const size_t syncInterval_;
     Codec codec_;
 
-    std::auto_ptr<OutputStream> stream_;
+    boost::shared_ptr<OutputStream> stream_;
     std::auto_ptr<OutputStream> buffer_;
     const DataFileSync sync_;
     int64_t objectCount_;
@@ -107,7 +108,7 @@ public:
     /**
      * Constructs a data file writer with the given sync interval and name.
      */
-    DataFileWriterBase(std::auto_ptr<OutputStream> stream,
+    DataFileWriterBase(boost::shared_ptr<OutputStream> stream,
         const ValidSchema& schema,
         size_t syncInterval, Codec codec = NULL_CODEC);
 
@@ -146,7 +147,7 @@ public:
     /**
      * Constructs a new data file.
      */
-    DataFileWriter(std::auto_ptr<OutputStream> stream, const ValidSchema& schema,
+    DataFileWriter(boost::shared_ptr<OutputStream> stream, const ValidSchema& schema,
         size_t syncInterval = 16 * 1024, Codec codec = NULL_CODEC) :
         base_(new DataFileWriterBase(stream, schema, syncInterval, codec)) { }
 

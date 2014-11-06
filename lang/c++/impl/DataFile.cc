@@ -26,6 +26,7 @@
 #include <boost/iostreams/device/file.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace avro {
 using std::auto_ptr;
@@ -92,7 +93,7 @@ DataFileWriterBase::DataFileWriterBase(const char* filename,
     encoderPtr_->init(*buffer_);
 }
 
-DataFileWriterBase::DataFileWriterBase(std::auto_ptr<OutputStream> stream,
+DataFileWriterBase::DataFileWriterBase(boost::shared_ptr<OutputStream> stream,
     const ValidSchema& schema, size_t syncInterval, Codec codec) :
     filename_(""), schema_(schema), encoderPtr_(binaryEncoder()),
     syncInterval_(syncInterval),
