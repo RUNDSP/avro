@@ -26,6 +26,7 @@
 #include <boost/iostreams/device/file.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace avro {
 using std::auto_ptr;
@@ -69,6 +70,35 @@ DataFileWriterBase::DataFileWriterBase(const char* filename,
     syncInterval_(syncInterval),
     codec_(codec),
     stream_(fileOutputStream(filename)),
+    buffer_(memoryOutputStream()),
+    sync_(makeSync()), objectCount_(0)
+{
+    if (syncInterval < minSyncInterval || syncInterval > maxSyncInterval) {
+        throw Exception(boost::format("Invalid sync interval: %1%. "
+            "Should be between %2% and %3%") % syncInterval %
+            minSyncInterval % maxSyncInterval);
+    }
+    setMetadata(AVRO_CODEC_KEY, AVRO_NULL_CODEC);
+
+    if (codec_ == NULL_CODEC) {
+      setMetadata(AVRO_CODEC_KEY, AVRO_NULL_CODEC);
+    } else if (codec_ == DEFLATE_CODEC) {
+      setMetadata(AVRO_CODEC_KEY, AVRO_DEFLATE_CODEC);
+    } else {
+      throw Exception("Unknown codec codec");
+    }
+    setMetadata(AVRO_SCHEMA_KEY, toString(schema));
+
+    writeHeader();
+    encoderPtr_->init(*buffer_);
+}
+
+DataFileWriterBase::DataFileWriterBase(boost::shared_ptr<OutputStream> stream,
+    const ValidSchema& schema, size_t syncInterval, Codec codec) :
+    filename_(""), schema_(schema), encoderPtr_(binaryEncoder()),
+    syncInterval_(syncInterval),
+    codec_(codec),
+    stream_(stream),
     buffer_(memoryOutputStream()),
     sync_(makeSync()), objectCount_(0)
 {
