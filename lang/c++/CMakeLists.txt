@@ -52,7 +52,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 
 
-find_package (Boost 1.38 REQUIRED
+find_package (Boost 1.57 REQUIRED
     COMPONENTS filesystem system program_options iostreams)
 
 add_definitions (${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
